@@ -1,0 +1,29 @@
+Systick->STCTRL = Registro de control y status R/W
+Systick->STRELOAD = Recarga valor 
+Systick->STCURR = valor actual
+Systick->STCALIB = Calibración del valor **(buscar que es)**
+
+BIT 
+0	1	2	  15:3	16	  32:17    23:0	    31:24
+ENABLE  TICKINT CLKSOURCE  -	COUNTFLAG  - 	   RELOAD    -
+
+23:0:2 	
+CURRENT
+ 
+0) 1=Contador del systick prendido 0= Apagado
+1) 1= Interrupción del systick prendida 0 = Apagada
+2) 1= CPU clock select  0 = external clock pin(STCLK) select
+15:3- 32:17) Reservado
+16) Cuando el contador llega a 0 se pone la flag  **(CREO)**
+23:0) Este es el VALOR que recarga dentro del SYSTICK counter cuando este llega a 0
+23:0:2) Lee el valor actual y al escribir LOQUESEA se borra y reinicia el contador sin guardar lo que escribi
+
+Una interrupción de un periférico se vuelve "pendiente" por una de las siguientes razones:
+
+El NVIC (Nested Vector Interrupt Controller) detecta que la señal de interrupción está en ALTO y la interrupción no está activa.
+
+El NVIC detecta un flanco de subida en la señal de interrupción.
+
+El software escribe en el bit de registro correspondiente para establecer una interrupción como pendiente, o en el registro STIR para hacer que una SGI (Software Generated Interrupt) sea pendiente.
+
+

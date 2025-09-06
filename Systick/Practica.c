@@ -5,7 +5,7 @@
 
 int main(){
     configGPIO();
-    SysTick_Handler_Init(); // Initialize the SysTick handler
+    SysTick_Handler(); // Initialize the SysTick handler
 
     Systick_config();
 
