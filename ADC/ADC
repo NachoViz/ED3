@@ -1,0 +1,13 @@
+Conversor de 12 bits de aproximaciones suscesivas
+200Khz tasa maxima de conversor del ADC
+65*200KHZ= frecuencia maxima con lo que podemos trabajr con conversor ADC
+ CLKDIV nos da la frecuencia que vamos a dividir que va a tener el puerto
+ 13Mhz ->
+ Vreferencia = 3.3v
+ BURST en 0 para poder usar 
+ MAT0.1 señal que sale del TIMER - señales periodicas
+
+ TENSION = (Vref+) - (Vref-) / (4069= 2^12); 
+
+ MODO BURST
+ 65 ciclos PCLK -> muestras/seg

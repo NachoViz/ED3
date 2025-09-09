@@ -4,6 +4,7 @@
 #define count1 = 0; 
 #define count2 = 0; 
 
+
 int main(){
     configGPIO();
     configST();
@@ -39,5 +40,5 @@ void Systick_Handler(){
         LPC_GPIO0-> FIOPIN ^= 1 << 0;
         count1 = 0; 
     }
-
+    Systick_ClearCounterFlag(); //Systick->CTRL &= Systick->CTRL;
 }

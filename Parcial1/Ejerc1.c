@@ -3,9 +3,8 @@
 void configGPIO();
 void configST();
 
-uint8_t ticket_val;
+uint8_t ticket_val = 1;
 uint8_t sensorDePres;
-uint8_t barrera;
 uint32_t timeConf = 10000000; //10mill para 0.1seg
 uint8_t buttonCount;
 
