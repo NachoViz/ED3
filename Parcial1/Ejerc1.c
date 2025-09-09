@@ -3,35 +3,37 @@
 void configGPIO();
 void configST();
 
-uint8_t ticket_val = 1;
-uint8_t sensorDePres;
-uint32_t timeConf = 10000000; //10mill para 0.1seg
-uint8_t buttonCount;
+    uint8_t ticket_val = 1;
+    uint8_t sensorDePres;
+    uint32_t timeConf = 7000000; //10mill para 0.1seg
+    uint8_t buttonCount;
+
+    volatile uint16_t count;
 
 int main(){
     configGPIO();
     configST();
     while(1){
-        boton_pres();
-
+        
     }
-
 }
 
 void configGPIO(){
     LPC_GPIO1->FIODIR |= 1 << 5;            //LED
-    LPC_GPIO2->FIODIR &= ~(1 << 10);        //EINT
+    LPC_GPIO2->FIODIR &= ~(1 << 10);        //EINT sensor de presencia 
     LPC_GPIO0->FIODIR |= 1 << 15;           //MOTOR
-    LPC_GPIO0->FIODIR &= ~(1 << 10);        //boton
+    LPC_GPIO0->FIODIR &= ~(1 << 10);        //boton de config
 
-    LPC_PINCON->PINMODE0 |= 3 << 20;        //PULL-DOWN
+    LPC_PINCON->PINMODE4 |= 3 << 20;        //PULL-DOWN
+    LPC_PINCON->PINMODE2 |= 3 << 20;
 
     LPC_GPIO1->FIOCLR |= ( 1  << 5);
 
 }
 
 void boton_pres(){
-    if(LPC_GPIO0-> FIOPIN & ~(1 << 10)){
+    //DEBERIA SER GPIO ESTO, TENGO QUE CONFIGURARLO 
+    if(ticket_val &&!(LPC_GPIO0->FIOPIN & (1 << 10))){
         delay();
         Button++;
     }
@@ -74,15 +76,16 @@ void configEINT(){
 void configST(){
     Systick->LOAD = timeConf;
     Systick->VAL = 0;
-    Systick->CTRL = 0x07; 
+    Systick->CTRL = 0; 
 }
 
 void Systick_Handler(){
-    volatile uint16_t count;
     count++;
     if( count == ticks){
         LPC_GPIO0->FIOCLR |= ( 1 << 15); //Cierro la barrera
+        count = 0;
         ticks = 0;
+        Systick->CTRL |= ~(1 << 0);
     }
 
 }
@@ -90,8 +93,14 @@ void Systick_Handler(){
 void EINT0_IRQHandler(){
     if(ticket_val){
         LPC_GPIO0->FIOSET |= ( 1 << 15 );  //abro la barrera ticket y sensor en alto
+            // Reinicio y habilito el SysTick para que empiece a contar
+        SysTick->LOAD = timeConf; // Para 100ms
+        SysTick->VAL = 0;
+        SysTick->CTRL = 0x07;
+
     }else{
-        LPC_GPIO1->FIOSET |= ( 1 << 5); //PRENDO LED ROJO
+        LPC_GPIO1->FIOSET |= ( 1 << 5 ); //PRENDO LED ROJO
     }
+    
     LPC_SC->EXTINT0 = 1 << 0;
 }

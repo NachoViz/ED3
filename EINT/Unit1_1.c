@@ -43,6 +43,8 @@ int main(void){
     EINT0_Init();
 
     while(1){
+
         __WFI();
+        
     }
 }

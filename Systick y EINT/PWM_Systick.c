@@ -19,10 +19,14 @@ int main(){
 //Pongo un boton para prender y apagar el generador
 void configGPIO(){
     //Boton activo por alto
-    LPC_PINCON->PINMODE0 |= ( 3 << 0 );   //Pull-down en P0.0
-    LPC_GPIO->FIODIR |= (0 << 0);
+    LPC_PINCON->PINMODE0 |= ( 3 << 0 );   
+    LPC_GPIO0->FIODIR &= ~(1 << 0);
 
-    LPC_GPIO->FIODIR |= (1 << 2); //P0.1 salida
+    LPC_GPIO0->FIODIR |= (1 << 2);
+
+
+
+
 } 
 
 void configEINT(){
@@ -31,12 +35,13 @@ void configEINT(){
 }
 
 void configST(){
-    Systick->LOAD = 100000;    //1ms
+    Systick->LOAD = 100000;    //100ms
     Systick->VAL = 0;
-    Systick->CTRL = 0x07;  //Habilito interrupcion, clk interno, comienza a contar
+    Systick->CTRL = 0x07;  //Habilito interrupcion, clk interno, comienza a contar 0111
 }
 
 void Systick_Handler(){
+    tick++; 
     if(pwm_enable){
         tick++;
         if(tick<75){
