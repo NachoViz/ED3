@@ -1,49 +1,80 @@
-#include<LPC1679.H>
+#include "LPC17xx.h"
 
-const uint8_t maximoDato = 10;
-const uint16_t PrioritySetting= 1; 
-const uint8_t MEMORIA [];
-volatile uint32_t count;
-volatile uint8_t is_full;
+volatile uint8_t memoria[10];
+volatile uint32_t contador_numeros = 0;
+volatile uint8_t prioridad_actual = 0;
 
-void configGPIO();
+// Prototipos de funciones
+void configGPIO(void);
+void agregar_numero(uint8_t nuevo_valor);
+void EINT3_IRQHandler(void);
 
-
-int main(){
-    configGPIO();
+void EINT3_IRQHandler(void) {
     
-    while(1){
-
-    }
-
-}
-
-void configGPIO(){
-    LPC_GPIO0->FIODIR &= ~(0xF);
-    LPG_GPIOINT->IO0IntEnF |= (0xF);
+    // Leer el valor de los 4 pines de entrada (P0.0 a P0.3).
+    uint8_t valor_leido = LPC_GPIO0->FIOPIN & 0xF;
     
-    NVIC_EnableIRQ(EINT3_IRQn);
-    NVIC_SetPriority(EINT3_IRQn,SettingPriority);
-}
-
-void EINT3_Handler(){
-    const uint8_t valor = LPC_GPIO0->FIOPIN &= 0xF ;
-    update_memory(valor);
-}
-
-void update_memory(uint8_t nuevo_valor){
-    count++; //cantidad de datos
-
-    for(uint32_t )
-}
-
-void setearPrioridad(){
-    if(count>= 200){
-        count = 0;
-        SettingPriority++;
-        if(SettingPriority > 32){
+    // Guardar el nuevo número en el array y desplazar los anteriores.
+    agregar_numero(valor_leido);
+    
+    // Incrementar el contador.
+    contador_numeros++;
+    
+    
+    if (contador_numeros >= 200) {
+        
+        
+        if (prioridad_actual < 15) {
+            prioridad_actual++;
+            NVIC_SetPriority(EINT3_IRQn, prioridad_actual);
+        } else {
+            
+            LPC_GPIOINT->IO0IntEnF &= ~(0xF);
             NVIC_DisableIRQ(EINT3_IRQn);
         }
-
+        
+        
+        contador_numeros = 0;
     }
+    
+    
+    LPC_GPIOINT->IO0IntClr = 0xF;
+}
+
+
+void agregar_numero(uint8_t nuevo_valor) {
+    
+    
+    for (int i = 8; i >= 0; i--) {
+        memoria[i + 1] = memoria[i];
+    }
+    
+    
+    memoria[0] = nuevo_valor;
+}
+
+void configGPIO(void) {
+    
+    LPC_PINCON->PINSEL0 &= ~(0xFF);
+    
+    LPC_GPIO0->FIODIR &= ~(0xF);
+    
+    LPC_GPIOINT->IO0IntEnF |= 0xF;
+    
+    NVIC_SetPriority(EINT3_IRQn, 0);
+    NVIC_EnableIRQ(EINT3_IRQn);
+}
+
+int main(void) {
+    
+    for (int i = 0; i < 10; i++) {
+        memoria[i] = 0;
+    }
+    
+    configGPIO();
+    
+    while(1) {
+    }
+    
+    return 0;
 }
