@@ -13,6 +13,7 @@ void configST();
 int main(){
     configGPIO();
     configST();
+
     while(1){
         
     }
@@ -22,7 +23,7 @@ void configGPIO(){
     LPC_GPIO1->FIODIR |= 1 << 5;            //LED
     LPC_GPIO2->FIODIR &= ~(1 << 10);        //EINT sensor de presencia 
     LPC_GPIO0->FIODIR |= 1 << 15;           //MOTOR
-    LPC_GPIO0->FIODIR &= ~(1 << 10);        //boton de config
+    LPC_GPIO0->FIODIR &= ~(1 << 15);        //boton de config
 
     LPC_PINCON->PINMODE4 |= 3 << 20;        //PULL-DOWN
     LPC_PINCON->PINMODE2 |= 3 << 20;
@@ -33,9 +34,9 @@ void configGPIO(){
 
 void boton_pres(){
     //DEBERIA SER GPIO ESTO, TENGO QUE CONFIGURARLO 
-    if(ticket_val &&!(LPC_GPIO0->FIOPIN & (1 << 10))){
+    if(ticket_val &&!(LPC_GPIO0->FIOPIN & (1 << 15))){
         delay();
-        Button++;
+        ButtonCount++;
     }
     if(ButtonCount < 5){
     switch(ButtonCount){
@@ -57,6 +58,7 @@ void boton_pres(){
             }
         }else{
             ButtonCount = 0;
+            ticks=50;
         } 
 }
 
@@ -90,10 +92,10 @@ void Systick_Handler(){
 
 }
 
-void EINT0_IRQHandler(){
+void EINT3_IRQHandler(){
     if(ticket_val){
         LPC_GPIO0->FIOSET |= ( 1 << 15 );  //abro la barrera ticket y sensor en alto
-            // Reinicio y habilito el SysTick para que empiece a contar
+         // Reinicio y habilito el SysTick para que empiece a contar
         SysTick->LOAD = timeConf; // Para 100ms
         SysTick->VAL = 0;
         SysTick->CTRL = 0x07;
@@ -102,5 +104,5 @@ void EINT0_IRQHandler(){
         LPC_GPIO1->FIOSET |= ( 1 << 5 ); //PRENDO LED ROJO
     }
     
-    LPC_SC->EXTINT0 = 1 << 0;
+    LPC_SC->EXTINT = 1 << 3;
 }
