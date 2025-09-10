@@ -66,7 +66,7 @@ void SysTick_Handler() {
         if (count > 9) {
             count = 0;
         }
-    }
+    }   
     update_display(count);
 }
 

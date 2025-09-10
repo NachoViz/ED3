@@ -7,6 +7,8 @@ const uint8_t tabla[] = {};
 volatile uint8_t count;
 volatile uint8_t is_fast;
 volatile uint8_t is_pause;
+#define SEC_FREC 16000000;
+#define MILI_FREC 1600000;
 
 int main(){
     configGPIO();
@@ -25,11 +27,8 @@ void configGPIO(){
     LPC_GPIO2->FIODIR &= ~(0X7 << 10);                              //0111 
 
     LPC_PINCON->PINSEL4 |= (1 << 24) | (1 << 22 )  | (1 << 20);   //P2.10-12 
-    LPC_PINCON->PINMODE4 |= (3 << 20);
-    LPC_PINCON->PINMODE4 |= (00 << 22);
-    LPC_PINCON->PINMODE4 |= (00 << 24);
 
-    LPC_SC->EXTPOLAR |= 1 << 0; 
+    LPC_SC->EXTPOLAR |= ~(1 << 0); 
     LPC_SC->EXTPOLAR &= ~(1 << 1); 
     LPC_SC->EXTPOLAR &= ~(1 << 2); 
 
@@ -40,28 +39,52 @@ void configGPIO(){
 
 
 void configST(){
-
+    Systick->LOAD = SEC_FREC;
+    Systick->VAL = 0; 
+    Systick->CTRL = 0x07;
 }
 
 void Systick_Handler(){
+    if(is_fast){
+        
+    }
+    if(!is_pause){
+        count++
+        if(count<=9){
+            TeQueroActualizado(count);
+        }else{
+            count = 0;
+        }
+    }
+}
+
+void TeQueroActualizado(value){
+    LPC_GPIO0->FIOCLR |= 0x7F;
+    LPC_GPIO0->FIOSET |= tabla[value] << 0;
 
 }
 
 
 void EINT0_Handler(){
-    if(LPC_GPIO2->FIOPIN & (1 << 10)){
-        cuenta = 0; 
-        TeQueroActualizado(cuenta);
-        //
-    }
+        count = 0; 
+        TeQueroActualizado(count);
+        Systick->LOAD = TIME;
+        Systick->VAL = 0;
+        Systick->CTRL = 0x07;
+        
+    LPC_SC->EXTINT |= ( 1 << 0 );
 }
-
+//pausa y continue
 void EINT1_Handler(){
-    if(!(LPC_GPIO2->FIOPIN & (1 << 11))){
-        Systick->CTRL = 0; 
-    }
+    is_pause ^= 1 ; 
+    LPC_SC->EXTINT |= ( 1 << 1 );
 }
 
 void EINT2_Handler(){
-    
+    is_fast ^= 1;
+    if(is_fast){
+        Systick->LOAD = SEC_FREC;
+    }else{
+        Systick->LOAD = MILI_FREC;
+    }
 }

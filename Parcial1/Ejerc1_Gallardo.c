@@ -33,13 +33,7 @@ void configST(){
 }
 
 void Systick_Handler(){
-    if (!is_paused) {
-        count++;
-        if (count > 9) {
-            count = 0;
-        }
-    }
-    update_display(count);
+    
 }
 
 void configEINT(){
@@ -60,20 +54,29 @@ void update_display(uint8_t value) {
 
 void EINT0_IRQHandler(){
     //reinicia la cuenta y hasta que no cambia de valor se mantiene en 0
-    cuenta = 0; 
-    contador = 0; 
-    Systick->LOAD = TIME;
-    Systick->VAL = 0; 
-    Systick->CTRL = 0x07; 
-}
-
-void EINT1_IRQHandler(){
-    if(LPC_GPIO2->FIOPIN & 1 << 11){
-        count
+    if(is_pause){
+        count= 0;
+        update_display(count);
+        Systick->LOAD = TIME;
+        Systick->VAL =0;
+        Systick->CTRL = 0x07;
     }
+    LPC_SC->EXTINT = (1 << 0);
 }
-
+//Pasua y continua
+void EINT1_IRQHandler(){
+    is_pause ^= 1; 
+    if(is_pause){
+        Systick->CTRL = 0;
+    }else{
+        Systick->CTRL = 0x07;
+    }
+    LPC_SC->EXTINT = (1 << 1);
+}
+//Cambio la velocidad
 void EINT2_IRQHandler(){
+    is_fast ^= 1;   //por defecto es 1seg
 
+    LPC_SC->EXTINT = (1 << 2);
 
 }
