@@ -1,0 +1,8 @@
+Debo tener configurado PRIMERO EL PINSEL
+10 bits converter
+resistores 
+puedo tener un dato en espera en la memoria
+Seleccionar entre velocidad y fiabilidad
+...
+ADC de 12 bits, entonces se pierden dos menos significativos(HAY QUE HACER CORRIMIENTO)
+->BIAS = 0 o 1 consume mas corriente a cambio de aumentar la frecuencia

@@ -1,0 +1,50 @@
+Timers 4
+Hay que configurar siempre el PINSEL de los puertos que vaya a usar
+Contador ascendente
+muchas cuentas genera->overflow-> levanta el flag del timer
+Cuando llega al overflow, vuelve a  contar de 0.
+2 funcionalidades nuevas para comunicarse con el externir
+    -Capture -> Registros donde se carga la cuenta de dnode sucedio la interrupcion
+             -> Sirve para sacar la diferencia de tiempo
+             -> Medir la frecuencia de una señal
+             ->Entra
+    -Match -> Yo decido que poner en ese registro, funciona como un el timer para ver si llego a esa cuenta
+           -> Sale
+
+Prescaler Register es el que cuenta->cuando llega al limite -> aumenta +1 el timerX
+Cuando Prescaler Register se compara cpom el Prescaler Counter y si es igual. Aumenta TimerX
+
+PCONP_PCTIMx
+LPC_SC-> PLCKSEL0->PLCK_TIMERX    <<Reciben 25Mhz reset value de 00 asique le asigna el CLK/4
+SystemCoreClock varaible global que ya existe y devuelve la recuencia del Clock
+
+El capture no genera interrupcion?
+
+Prescaler Counter = solo se puede leer
+
+(pag 509)
+Controlo los 4 pines de match external  structura LPC_TIMX->
+FIOPIN ==
+EM0
+EM1 ...
+los controlo en funcion 
+EMC0    00-> NO HAGO NADA    01 ->Limpia   10->Pongo el bit en 1  11-> Toggle
+EMC1...
+
+RESERVER -> Sirve para completar espacios vacios ALINEAR la estructura. 
+
+RESET funciona en el ultimo flanco  (es el unico que funciona de esta forma)(1 flanco antes que termine)
+
+Timer = CLK / 4 
+F_Tc = Fclk / (PR+1)            Fclk = 25 Mhz
+
+TCcount = (PR+1) / Fclk
+1 [ms] = (PR+1) / (25 [Mhz]);   PR= 24999     es un numero muy como ya para usarlo siempre
+
+calcular el tiempo de una interrupcion
+Tint = (MR+1)(PR+1) / Fclk
+MR = (Tint * Fclk / (PR+1))-1
+Tint = 50 [ms] = ( MR+1 ) * (1 [ms])
+
+DRIVERS 
+Hay que inicializarla a 0 a la structura (sino es basura)

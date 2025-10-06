@@ -1,0 +1,25 @@
+TIMER 
+    ->4 Timers  de 32bits 
+    ->Generar interrupciones periodicas
+    ->Contador de eventos
+    ->Contador=Registro   se incrementa el TIMER
+Registros de 
+    + Match
+    + Control
+
+Registro Match-> MAT0.0-3
+                  -> Modifico el estado logico de un bit
+                  -> Resetear el contador
+                  -> Generar interrupciones
+                  -> Contador del Timer se comparan al mismo tiempo con los MAT0.X
+                
+La interrupcion se genera cuando el valor del contador interno del temporizador TC
+  -> Timer en MODO CONTADOR para contar eventos (subida o bajada)
+  -> DOS REGISTROS DE CAPTURA
+  PLCKSEL0     pag59
+  PINSEL3 |= (3 << 24)      pag120
+  PINSEL7 |= (2 << 18)
+  ->EMR         pag509
+  ->MR0     = 700000...;
+  ->MCR
+  ->TCR       ->Contador del timer y del presscaler en 0?:

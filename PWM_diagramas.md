@@ -58,9 +58,9 @@ Diagrama de flujo
 
         ->EXTMODE
 
- 	->EXTINT
-
- 	 |
+ 	    ->EXTINT
+        | 
+ 	    |
 
       NVIC
 

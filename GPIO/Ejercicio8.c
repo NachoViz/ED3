@@ -6,13 +6,8 @@
 
 #define LED_MASK     BITS_MASK(4,0)
 
-
-
-
 int main(){
 
-     
-    LPC_PINCON->FIOPIN = 
 
 }
 
